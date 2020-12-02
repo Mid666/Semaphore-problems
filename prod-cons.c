@@ -101,8 +101,6 @@ int main()
 				sh_mem->buffer, sh_mem->free_slots, sh_mem->filled_slots, sh_mem->wr_index, sh_mem->rd_index);
 	
 	
-	
-	
 	/********** producer-consumer ************/
 	
 	while(child_no++<2)
@@ -116,14 +114,12 @@ int main()
 
 		if(retf == 0)
 		{
-
 			signal(SIGINT, SIGINT_HANDLER);
 			
 			if(child_no == 1)
 			{
 				while(1)
-				{
-										
+				{						
 					usleep(800000);
 					/*******LOCK START******/
 					
@@ -176,16 +172,12 @@ int main()
 					/********* UNLOCK END *********/
 
 				}
-
 				exit(0);
-
 			}
 			
 			if(child_no == 2)
 			{
-				
 				usleep(800000);
-				
 				while(1)
 				{
 					/********** LOCK START**********/
@@ -234,10 +226,8 @@ int main()
 
 				}
 				exit(0);
-	
 			}
 		}
-	
 	}
 
 	if(retf > 0)
@@ -266,18 +256,12 @@ int main()
 					printf("Abnormal Termination\n");
 				}
 			}
-
 			if(retw < 0)
 				break;
 		}
-		
 		exit(0);
-	
 	}
-
-
 }
-
 
 void producer()
 {
