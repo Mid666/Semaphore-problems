@@ -1,5 +1,5 @@
 /* Midhun Nair      Mid666
- * Counting Semaphore 
+ * Counting Semaphore----System V IPC
  * Producer-Consumer 
  *
  */
