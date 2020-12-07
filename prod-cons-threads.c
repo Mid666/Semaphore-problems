@@ -139,12 +139,13 @@ static int semaphore_init(int init_filled, int init_free, int sync)
 
 void *producer(void *arg)
 {
-	usleep(600000);
+
+	shm *sh_mem =  (shm *)arg;
 
 	while(1)
 	{
-		shm *sh_mem =  (shm *)arg;
 		
+		usleep(600000);
 		sem_wait(&binsync);
 		sem_wait(&freeslots);
 
@@ -174,11 +175,12 @@ void *producer(void *arg)
 
 void *consumer(void *arg)
 {
+
+	shm *sh_mem =  (shm *)arg;
+
 	while(1)
 	{
-		
 		usleep(600000);
-		shm *sh_mem =  (shm *)arg;
 		
 		sem_wait(&filledslots);
 				
@@ -199,7 +201,6 @@ void *consumer(void *arg)
 	}
 
 }
-
 
 
 
