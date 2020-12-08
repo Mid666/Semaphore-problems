@@ -1,7 +1,7 @@
 /* Midhun Nair
  * producer and consumer problem using threads
  * Counting Semaphore-User space semaphore objects
- * Date: 07/12/2020
+ * Date: 06/12/2020
  *
  */
 
@@ -67,7 +67,6 @@ int main()
 		exit(1);
 	}
 	
-	
 	ret = pthread_create(&thid1, NULL, thread[0], (void *)shma);
 	if(ret == EINVAL)
 		perror("Invalid attribute settings");
@@ -80,20 +79,16 @@ int main()
 	if(ret == EPERM)
 		perror("Insufficient resource");
 
-
 	pthread_join(thid1, NULL);
 	pthread_join(thid2, NULL);
-
 
 	exit(0);
 	
 }
 
 
-
 static int buffer_init(shm *shmem, int max_buf_size)
 {
-
 
 	if(max_buf_size == 0 || shmem == NULL)
 		return 1;
@@ -108,8 +103,7 @@ static int buffer_init(shm *shmem, int max_buf_size)
 }
 
 static int semaphore_init(int init_filled, int init_free, int sync)
-{
-		
+{	
 	int rets;
 	rets = sem_init(&freeslots, 0, init_free);	
 	if(rets!=0)
@@ -139,17 +133,16 @@ static int semaphore_init(int init_filled, int init_free, int sync)
 
 void *producer(void *arg)
 {
-
 	shm *sh_mem =  (shm *)arg;
 
 	while(1)
-	{
-		
+	{	
 		usleep(600000);
+		
 		sem_wait(&binsync);
 		sem_wait(&freeslots);
-
 		value++;
+		
 		if((sh_mem->filled_slots) < (sh_mem->max_buffer_size))
 		{	
 			sh_mem->buffer[sh_mem->wr_index] = value;
@@ -157,13 +150,6 @@ void *producer(void *arg)
 			(sh_mem->wr_index)++;			
 			(sh_mem->filled_slots)++;
 			(sh_mem->free_slots)--;
-
-			if(sh_mem->wr_index == 20)
-			{
-				sh_mem->wr_index = 0;
-				sh_mem->filled_slots = 0;
-				sh_mem->free_slots = 20;	
-			}
 
 			if(value == 73)
 				value = '0';
@@ -175,7 +161,6 @@ void *producer(void *arg)
 
 void *consumer(void *arg)
 {
-
 	shm *sh_mem =  (shm *)arg;
 
 	while(1)
@@ -193,6 +178,13 @@ void *consumer(void *arg)
 			(sh_mem->rd_index)++;			
 			if(sh_mem->rd_index == 20)
 				sh_mem->rd_index = 0;
+				
+			if(sh_mem->wr_index == 20)
+			{
+				sh_mem->wr_index = 0;
+				sh_mem->filled_slots = 0;
+				sh_mem->free_slots = 20;	
+			}
 
 		}
 		
