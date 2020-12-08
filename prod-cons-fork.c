@@ -1,7 +1,7 @@
-/* Midhun Nair      Mid666
- * Counting Semaphore----System V IPC
+/* Midhun Nair     
+ * Counting Semaphore with System Space IPC
  * Producer-Consumer 
- *
+ * Date: 08/12/2020
  */
 
 #include<unistd.h>
@@ -93,13 +93,11 @@ int main()
 	sh_mem->filled_slots = 0;
 	sh_mem->free_slots = 20;
 
-	
 	memset(sh_mem->buffer, 0, 20);
 	memset(readbuffer, 0, 20);
 
 	printf("Before Starting:  Buffer = %s\nFree slots = %d\nfilled slots = %d\nwr_index = %d\nrd_index = %d\n\n",\
 				sh_mem->buffer, sh_mem->free_slots, sh_mem->filled_slots, sh_mem->wr_index, sh_mem->rd_index);
-	
 	
 	/********** producer-consumer ************/
 	
@@ -141,8 +139,7 @@ int main()
 
 					semop(semid, sops, 2);  /* Do both operations ATOMICALLY */
 					
-					/********LOCK END*******/
-									
+					/********LOCK END*******/			
 							
 					/***CRITICAL SECTION START***/
 					
@@ -150,11 +147,9 @@ int main()
 					
 					/***CRITICAL SECTION END***/
 
-					
 				printf("After Producer CS:  Buffer = %s\nFree slots = %d\nfilled slots = %d\nwr_index = %d\nrd_index = %d\n\n",\
 					       sh_mem->buffer, sh_mem->free_slots, sh_mem->filled_slots, sh_mem->wr_index, sh_mem->rd_index);
 
-					
 					/********** UNLOCK START**********/
 
 					/*Getting out of critical section */
@@ -170,16 +165,16 @@ int main()
 					semop(semid, (sops+1), 2);
 
 					/********* UNLOCK END *********/
-
 				}
+				
 				exit(0);
 			}
 			
 			if(child_no == 2)
 			{
-				usleep(800000);
 				while(1)
 				{
+					usleep(800000);
 					/********** LOCK START**********/
 
 		 			/* decrement 1, initial value: Depend on filled slots
@@ -256,12 +251,15 @@ int main()
 					printf("Abnormal Termination\n");
 				}
 			}
+
 			if(retw < 0)
 				break;
 		}
+		
 		exit(0);
 	}
 }
+
 
 void producer()
 {
@@ -273,13 +271,6 @@ void producer()
 		(sh_mem->wr_index)++;			
 		(sh_mem->filled_slots)++;
 		(sh_mem->free_slots)--;
-
-		if(sh_mem->wr_index == 20)
-		{
-			sh_mem->wr_index = 0;
-			sh_mem->filled_slots = 0;
-			sh_mem->free_slots = 20;	
-		}
 
 		if(value == 73)
 			value = '0';
@@ -299,6 +290,13 @@ void consumer()
 		(sh_mem->rd_index)++;			
 		if(sh_mem->rd_index == 20)
 			sh_mem->rd_index = 0;
+			
+		if(sh_mem->wr_index == 20)
+		{
+			sh_mem->wr_index = 0;
+			sh_mem->filled_slots = 0;
+			sh_mem->free_slots = 20;	
+		}
 
 	}
 	return;
@@ -311,7 +309,6 @@ void SIGINT_HANDLER(int signum)
 	printf("Exiting...\nExited\n");
 	exit(0);
 }
-
 
 
 
